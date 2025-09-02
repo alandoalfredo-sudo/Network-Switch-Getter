@@ -69,7 +69,7 @@ A comprehensive iOS application for discovering, monitoring, and troubleshooting
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/Network-Switch-Getter.git
+   git clone https://github.com/alandoalfredo-sudo/Network-Switch-Getter.git
    cd Network-Switch-Getter
    ```
 
