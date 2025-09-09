@@ -16,8 +16,10 @@ class NetworkDiscoveryManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let networkMonitor = NWPathMonitor()
     private var scanTask: Task<Void, Never>?
+    private let logger = NetworkLogger.shared
     
     init() {
+        logger.info("NetworkDiscoveryManager initialized")
         setupNetworkMonitoring()
         getCurrentNetworkInterface()
     }
@@ -29,23 +31,31 @@ class NetworkDiscoveryManager: ObservableObject {
     
     // MARK: - Network Monitoring
     private func setupNetworkMonitoring() {
+        logger.info("Setting up network monitoring")
         networkMonitor.pathUpdateHandler = { [weak self] path in
             DispatchQueue.main.async {
                 if path.status == .satisfied {
+                    self?.logger.info("Network path satisfied, updating interface")
                     self?.getCurrentNetworkInterface()
+                } else {
+                    self?.logger.warning("Network path not satisfied: \(path.status.debugDescription)")
                 }
             }
         }
         networkMonitor.start(queue: DispatchQueue.global(qos: .background))
+        logger.info("Network monitoring started")
     }
     
     // MARK: - Network Interface Detection
     func getCurrentNetworkInterface() {
+        logger.debug("Getting current network interface")
         guard let interface = getActiveNetworkInterface() else {
+            logger.warning("No active network interface found")
             currentNetworkInterface = nil
             return
         }
         currentNetworkInterface = interface
+        logger.info("Current network interface: \(interface.name) - \(interface.ipAddress)")
     }
     
     private func getActiveNetworkInterface() -> NetworkInterface? {
@@ -94,8 +104,12 @@ class NetworkDiscoveryManager: ObservableObject {
     
     // MARK: - Network Scanning
     func startNetworkScan() {
-        guard !isScanning else { return }
+        guard !isScanning else { 
+            logger.warning("Network scan already in progress")
+            return 
+        }
         
+        logger.info("Starting network scan")
         isScanning = true
         scanProgress = 0.0
         discoveredSwitches.removeAll()
@@ -106,6 +120,7 @@ class NetworkDiscoveryManager: ObservableObject {
     }
     
     func stopNetworkScan() {
+        logger.info("Stopping network scan")
         scanTask?.cancel()
         isScanning = false
         scanProgress = 0.0
@@ -113,6 +128,7 @@ class NetworkDiscoveryManager: ObservableObject {
     
     private func performNetworkScan() async {
         guard let networkInterface = currentNetworkInterface else {
+            logger.error("No network interface available for scanning")
             await MainActor.run {
                 isScanning = false
             }
@@ -122,6 +138,8 @@ class NetworkDiscoveryManager: ObservableObject {
         let ipRange = calculateIPRange(from: networkInterface.ipAddress, subnetMask: networkInterface.subnetMask)
         let totalIPs = ipRange.count
         var completedIPs = 0
+        
+        logger.logScanStart(ipRange: "\(networkInterface.ipAddress)/\(networkInterface.subnetMask)", totalIPs: totalIPs)
         
         await withTaskGroup(of: Void.self) { group in
             let semaphore = DispatchSemaphore(value: settings.maxConcurrentScans)
@@ -134,12 +152,14 @@ class NetworkDiscoveryManager: ObservableObject {
                     if let switchDevice = await self.scanIPAddress(ip) {
                         await MainActor.run {
                             self.discoveredSwitches.append(switchDevice)
+                            self.logger.logDeviceDiscovered(device: switchDevice)
                         }
                     }
                     
                     await MainActor.run {
                         completedIPs += 1
                         self.scanProgress = Double(completedIPs) / Double(totalIPs)
+                        self.logger.logScanProgress(current: completedIPs, total: totalIPs, percentage: self.scanProgress * 100)
                     }
                 }
             }
@@ -148,6 +168,7 @@ class NetworkDiscoveryManager: ObservableObject {
         await MainActor.run {
             isScanning = false
             scanProgress = 1.0
+            self.logger.logScanComplete(discoveredDevices: self.discoveredSwitches.count, duration: 0) // Duration would need to be tracked
         }
     }
     
@@ -367,6 +388,7 @@ class NetworkDiscoveryManager: ObservableObject {
     
     // MARK: - Troubleshooting
     func runTroubleshooting(for switchDevice: NetworkSwitch) {
+        logger.info("Starting troubleshooting for device: \(switchDevice.ipAddress)")
         troubleshootingResults.removeAll()
         
         Task {
@@ -384,12 +406,19 @@ class NetworkDiscoveryManager: ObservableObject {
             .dnsResolution
         ]
         
+        logger.logTroubleshootingStart(device: switchDevice, tests: tests)
+        
         for test in tests {
             let result = await performTroubleshootingTest(test, for: switchDevice)
             await MainActor.run {
                 troubleshootingResults.append(result)
+                self.logger.logTroubleshootingResult(device: switchDevice, test: test, result: result)
             }
         }
+        
+        let passedTests = troubleshootingResults.filter { $0.status == .passed }.count
+        let failedTests = troubleshootingResults.filter { $0.status == .failed }.count
+        logger.logTroubleshootingComplete(device: switchDevice, totalTests: tests.count, passedTests: passedTests, failedTests: failedTests)
     }
     
     private func performTroubleshootingTest(_ test: TroubleshootingTest, for switchDevice: NetworkSwitch) async -> TroubleshootingResult {
