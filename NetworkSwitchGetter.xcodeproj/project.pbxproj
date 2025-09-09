@@ -7,40 +7,46 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1234567890ABCDEF1234567 /* NetworkSwitchGetterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234566 /* NetworkSwitchGetterApp.swift */; };
-		A1234567890ABCDEF1234569 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234568 /* ContentView.swift */; };
-		A1234567890ABCDEF123456B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456A /* Assets.xcassets */; };
-		A1234567890ABCDEF123456E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456D /* Preview Assets.xcassets */; };
-		A1234567890ABCDEF1234570 /* NetworkDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456F /* NetworkDiscoveryManager.swift */; };
-		A1234567890ABCDEF1234572 /* SwitchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234571 /* SwitchModel.swift */; };
-		A1234567890ABCDEF1234574 /* TroubleshootingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234573 /* TroubleshootingView.swift */; };
-		A1234567890ABCDEF1234576 /* SwitchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234575 /* SwitchDetailView.swift */; };
-		A1234567890ABCDEF1234578 /* NetworkAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234577 /* NetworkAnalytics.swift */; };
-		A1234567890ABCDEF123457A /* NetworkMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234579 /* NetworkMonitoringManager.swift */; };
-		A1234567890ABCDEF123457C /* PocketDisplayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123457B /* PocketDisplayWidget.swift */; };
-		A1234567890ABCDEF123457E /* AIConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123457D /* AIConfigurationView.swift */; };
-		A1234567890ABCDEF1234580 /* NetworkAnalyticsDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123457F /* NetworkAnalyticsDashboard.swift */; };
+		F04050C8EB574845B8EE29884DC74B48 /* NetworkSwitchGetterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438F78EFF2F641D0B79002AF87C37EED /* NetworkSwitchGetterApp.swift */; };
+		C56A733773CE4F14A35DCC439CD0D1D0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09DDE6847F049BCBD2651ABAD490762 /* ContentView.swift */; };
+		F3ECA45C50FE41E885E0AC0F4858B783 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4BAE3FF03DD4F97A95625F3578D1C69 /* Assets.xcassets */; };
+		E7572CF2804A408780845DF3D75B4134 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EFF54EE29D344F928C9175FB832F8A3C /* Preview Assets.xcassets */; };
+		B52A20C0BCEC4876BD8132FB13D971E2 /* NetworkDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 538D0239A4DE495A95FAB0D3460017FB /* NetworkDiscoveryManager.swift */; };
+		7CAC0056551E4101BC45C4660CA34E1F /* SwitchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA089020632B4E20BE6A59EB30E58B6B /* SwitchModel.swift */; };
+		F1DA905F507E447AA5948402596196FF /* TroubleshootingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5FAB8377D04A428A4E5F5477C8BECC /* TroubleshootingView.swift */; };
+		FF9E2DB791B141BA99F0EE939E19132D /* SwitchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2141288135E484A8914D0845879E443 /* SwitchDetailView.swift */; };
+		957B974FC4604387B9F9FC9D9819E453 /* NetworkAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A753F992CB4B7C99E883A008987FC2 /* NetworkAnalytics.swift */; };
+		2B8FEFE0C3674BC9B83D50B63EA768EA /* NetworkMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3389A5C02D84D5398E8FDC9135B1C5B /* NetworkMonitoringManager.swift */; };
+		F04050C8EB574845B8EE29884DC74B49 /* PocketDisplayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438F78EFF2F641D0B79002AF87C37EEE /* PocketDisplayWidget.swift */; };
+		C56A733773CE4F14A35DCC439CD0D1D1 /* AIConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09DDE6847F049BCBD2651ABAD490763 /* AIConfigurationView.swift */; };
+		F3ECA45C50FE41E885E0AC0F4858B784 /* NetworkAnalyticsDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BAE3FF03DD4F97A95625F3578D1C6A /* NetworkAnalyticsDashboard.swift */; };
+		E7572CF2804A408780845DF3D75B4135 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF54EE29D344F928C9175FB832F8A3D /* SettingsView.swift */; };
+		B52A20C0BCEC4876BD8132FB13D971E3 /* NetworkLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 538D0239A4DE495A95FAB0D3460017FC /* NetworkLogger.swift */; };
+		7CAC0056551E4101BC45C4660CA34E20 /* NetworkAnalyticsCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA089020632B4E20BE6A59EB30E58B6C /* NetworkAnalyticsCore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A1234567890ABCDEF1234563 /* NetworkSwitchGetter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetworkSwitchGetter.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1234567890ABCDEF1234566 /* NetworkSwitchGetterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSwitchGetterApp.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF1234568 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF123456A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A1234567890ABCDEF123456D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		A1234567890ABCDEF123456F /* NetworkDiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDiscoveryManager.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF1234571 /* SwitchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchModel.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF1234573 /* TroubleshootingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TroubleshootingView.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF1234575 /* SwitchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchDetailView.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF1234577 /* NetworkAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAnalytics.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF1234579 /* NetworkMonitoringManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitoringManager.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF123457B /* PocketDisplayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketDisplayWidget.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF123457D /* AIConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIConfigurationView.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF123457F /* NetworkAnalyticsDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAnalyticsDashboard.swift; sourceTree = "<group>"; };
+		F04050C8EB574845B8EE29884DC74B47 /* NetworkSwitchGetter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetworkSwitchGetter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		438F78EFF2F641D0B79002AF87C37EED /* NetworkSwitchGetterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSwitchGetterApp.swift; sourceTree = "<group>"; };
+		C09DDE6847F049BCBD2651ABAD490762 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D4BAE3FF03DD4F97A95625F3578D1C69 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EFF54EE29D344F928C9175FB832F8A3C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		538D0239A4DE495A95FAB0D3460017FB /* NetworkDiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDiscoveryManager.swift; sourceTree = "<group>"; };
+		DA089020632B4E20BE6A59EB30E58B6B /* SwitchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchModel.swift; sourceTree = "<group>"; };
+		CD5FAB8377D04A428A4E5F5477C8BECC /* TroubleshootingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TroubleshootingView.swift; sourceTree = "<group>"; };
+		E2141288135E484A8914D0845879E443 /* SwitchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchDetailView.swift; sourceTree = "<group>"; };
+		D1A753F992CB4B7C99E883A008987FC2 /* NetworkAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAnalytics.swift; sourceTree = "<group>"; };
+		D3389A5C02D84D5398E8FDC9135B1C5B /* NetworkMonitoringManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitoringManager.swift; sourceTree = "<group>"; };
+		438F78EFF2F641D0B79002AF87C37EEE /* PocketDisplayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketDisplayWidget.swift; sourceTree = "<group>"; };
+		C09DDE6847F049BCBD2651ABAD490763 /* AIConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIConfigurationView.swift; sourceTree = "<group>"; };
+		D4BAE3FF03DD4F97A95625F3578D1C6A /* NetworkAnalyticsDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAnalyticsDashboard.swift; sourceTree = "<group>"; };
+		EFF54EE29D344F928C9175FB832F8A3D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		538D0239A4DE495A95FAB0D3460017FC /* NetworkLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkLogger.swift; sourceTree = "<group>"; };
+		DA089020632B4E20BE6A59EB30E58B6C /* NetworkAnalyticsCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAnalyticsCore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A1234567890ABCDEF1234560 /* Frameworks */ = {
+		F04050C8EB574845B8EE29884DC74B46 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -50,46 +56,49 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A1234567890ABCDEF123455A /* NetworkSwitchGetter */ = {
+		F04050C8EB574845B8EE29884DC74B45 /* NetworkSwitchGetter */ = {
 			isa = PBXGroup;
 			children = (
-				A1234567890ABCDEF1234566 /* NetworkSwitchGetterApp.swift */,
-				A1234567890ABCDEF1234568 /* ContentView.swift */,
-				A1234567890ABCDEF123456F /* NetworkDiscoveryManager.swift */,
-				A1234567890ABCDEF1234571 /* SwitchModel.swift */,
-				A1234567890ABCDEF1234573 /* TroubleshootingView.swift */,
-				A1234567890ABCDEF1234575 /* SwitchDetailView.swift */,
-				A1234567890ABCDEF1234577 /* NetworkAnalytics.swift */,
-				A1234567890ABCDEF1234579 /* NetworkMonitoringManager.swift */,
-				A1234567890ABCDEF123457B /* PocketDisplayWidget.swift */,
-				A1234567890ABCDEF123457D /* AIConfigurationView.swift */,
-				A1234567890ABCDEF123457F /* NetworkAnalyticsDashboard.swift */,
-				A1234567890ABCDEF123456A /* Assets.xcassets */,
-				A1234567890ABCDEF123455B /* Preview Content */,
+				438F78EFF2F641D0B79002AF87C37EED /* NetworkSwitchGetterApp.swift */,
+				C09DDE6847F049BCBD2651ABAD490762 /* ContentView.swift */,
+				CD5FAB8377D04A428A4E5F5477C8BECC /* TroubleshootingView.swift */,
+				E2141288135E484A8914D0845879E443 /* SwitchDetailView.swift */,
+				D1A753F992CB4B7C99E883A008987FC2 /* NetworkAnalytics.swift */,
+				D3389A5C02D84D5398E8FDC9135B1C5B /* NetworkMonitoringManager.swift */,
+				538D0239A4DE495A95FAB0D3460017FB /* NetworkDiscoveryManager.swift */,
+				DA089020632B4E20BE6A59EB30E58B6B /* SwitchModel.swift */,
+				438F78EFF2F641D0B79002AF87C37EEE /* PocketDisplayWidget.swift */,
+				C09DDE6847F049BCBD2651ABAD490763 /* AIConfigurationView.swift */,
+				D4BAE3FF03DD4F97A95625F3578D1C6A /* NetworkAnalyticsDashboard.swift */,
+				EFF54EE29D344F928C9175FB832F8A3D /* SettingsView.swift */,
+				538D0239A4DE495A95FAB0D3460017FC /* NetworkLogger.swift */,
+				DA089020632B4E20BE6A59EB30E58B6C /* NetworkAnalyticsCore.swift */,
+				D4BAE3FF03DD4F97A95625F3578D1C69 /* Assets.xcassets */,
+				EFF54EE29D344F928C9175FB832F8A3C /* Preview Assets.xcassets */,
 			);
 			path = NetworkSwitchGetter;
 			sourceTree = "<group>";
 		};
-		A1234567890ABCDEF123455B /* Preview Content */ = {
+		EFF54EE29D344F928C9175FB832F8A3E /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				A1234567890ABCDEF123456D /* Preview Assets.xcassets */,
+				EFF54EE29D344F928C9175FB832F8A3C /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		A1234567890ABCDEF1234559 = {
+		F04050C8EB574845B8EE29884DC74B44 = {
 			isa = PBXGroup;
 			children = (
-				A1234567890ABCDEF123455A /* NetworkSwitchGetter */,
-				A1234567890ABCDEF1234564 /* Products */,
+				F04050C8EB574845B8EE29884DC74B45 /* NetworkSwitchGetter */,
+				F04050C8EB574845B8EE29884DC74B48 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A1234567890ABCDEF1234564 /* Products */ = {
+		F04050C8EB574845B8EE29884DC74B48 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A1234567890ABCDEF1234563 /* NetworkSwitchGetter.app */,
+				F04050C8EB574845B8EE29884DC74B47 /* NetworkSwitchGetter.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -97,13 +106,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A1234567890ABCDEF1234562 /* NetworkSwitchGetter */ = {
+		F04050C8EB574845B8EE29884DC74B46 /* NetworkSwitchGetter */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1234567890ABCDEF1234579 /* Build configuration list for PBXNativeTarget "NetworkSwitchGetter" */;
+			buildConfigurationList = F04050C8EB574845B8EE29884DC74B4A /* Build configuration list for PBXNativeTarget "NetworkSwitchGetter" */;
 			buildPhases = (
-				A1234567890ABCDEF123455F /* Sources */,
-				A1234567890ABCDEF1234560 /* Frameworks */,
-				A1234567890ABCDEF1234561 /* Resources */,
+				F04050C8EB574845B8EE29884DC74B43 /* Sources */,
+				F04050C8EB574845B8EE29884DC74B46 /* Frameworks */,
+				F04050C8EB574845B8EE29884DC74B49 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -111,25 +120,25 @@
 			);
 			name = NetworkSwitchGetter;
 			productName = NetworkSwitchGetter;
-			productReference = A1234567890ABCDEF1234563 /* NetworkSwitchGetter.app */;
+			productReference = F04050C8EB574845B8EE29884DC74B47 /* NetworkSwitchGetter.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		A1234567890ABCDEF123455C /* Project object */ = {
+		F04050C8EB574845B8EE29884DC74B42 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					A1234567890ABCDEF1234562 = {
-						CreatedOnToolsVersion = 15.0;
+					F04050C8EB574845B8EE29884DC74B46 = {
+						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
-			buildConfigurationList = A1234567890ABCDEF123455F /* Build configuration list for PBXProject "NetworkSwitchGetter" */;
+			buildConfigurationList = F04050C8EB574845B8EE29884DC74B4B /* Build configuration list for PBXProject "NetworkSwitchGetter" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -137,51 +146,54 @@
 				en,
 				Base,
 			);
-			mainGroup = A1234567890ABCDEF1234559;
-			productRefGroup = A1234567890ABCDEF1234564 /* Products */;
+			mainGroup = F04050C8EB574845B8EE29884DC74B44;
+			productRefGroup = F04050C8EB574845B8EE29884DC74B48 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A1234567890ABCDEF1234562 /* NetworkSwitchGetter */,
+				F04050C8EB574845B8EE29884DC74B46 /* NetworkSwitchGetter */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A1234567890ABCDEF1234561 /* Resources */ = {
+		F04050C8EB574845B8EE29884DC74B49 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1234567890ABCDEF123456E /* Preview Assets.xcassets in Resources */,
-				A1234567890ABCDEF123456B /* Assets.xcassets in Resources */,
+				E7572CF2804A408780845DF3D75B4134 /* Preview Assets.xcassets in Resources */,
+				F3ECA45C50FE41E885E0AC0F4858B783 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A1234567890ABCDEF123455F /* Sources */ = {
+		F04050C8EB574845B8EE29884DC74B43 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1234567890ABCDEF1234569 /* ContentView.swift in Sources */,
-				A1234567890ABCDEF1234570 /* NetworkDiscoveryManager.swift in Sources */,
-				A1234567890ABCDEF1234572 /* SwitchModel.swift in Sources */,
-				A1234567890ABCDEF1234574 /* TroubleshootingView.swift in Sources */,
-				A1234567890ABCDEF1234576 /* SwitchDetailView.swift in Sources */,
-				A1234567890ABCDEF1234578 /* NetworkAnalytics.swift in Sources */,
-				A1234567890ABCDEF123457A /* NetworkMonitoringManager.swift in Sources */,
-				A1234567890ABCDEF123457C /* PocketDisplayWidget.swift in Sources */,
-				A1234567890ABCDEF123457E /* AIConfigurationView.swift in Sources */,
-				A1234567890ABCDEF1234580 /* NetworkAnalyticsDashboard.swift in Sources */,
-				A1234567890ABCDEF1234567 /* NetworkSwitchGetterApp.swift in Sources */,
+				F04050C8EB574845B8EE29884DC74B48 /* NetworkSwitchGetterApp.swift in Sources */,
+				C56A733773CE4F14A35DCC439CD0D1D0 /* ContentView.swift in Sources */,
+				B52A20C0BCEC4876BD8132FB13D971E2 /* NetworkDiscoveryManager.swift in Sources */,
+				7CAC0056551E4101BC45C4660CA34E1F /* SwitchModel.swift in Sources */,
+				F1DA905F507E447AA5948402596196FF /* TroubleshootingView.swift in Sources */,
+				FF9E2DB791B141BA99F0EE939E19132D /* SwitchDetailView.swift in Sources */,
+				957B974FC4604387B9F9FC9D9819E453 /* NetworkAnalytics.swift in Sources */,
+				2B8FEFE0C3674BC9B83D50B63EA768EA /* NetworkMonitoringManager.swift in Sources */,
+				F04050C8EB574845B8EE29884DC74B49 /* PocketDisplayWidget.swift in Sources */,
+				C56A733773CE4F14A35DCC439CD0D1D1 /* AIConfigurationView.swift in Sources */,
+				F3ECA45C50FE41E885E0AC0F4858B784 /* NetworkAnalyticsDashboard.swift in Sources */,
+				E7572CF2804A408780845DF3D75B4135 /* SettingsView.swift in Sources */,
+				B52A20C0BCEC4876BD8132FB13D971E3 /* NetworkLogger.swift in Sources */,
+				7CAC0056551E4101BC45C4660CA34E20 /* NetworkAnalyticsCore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		A1234567890ABCDEF1234577 /* Debug */ = {
+		F04050C8EB574845B8EE29884DC74B4C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -244,7 +256,7 @@
 			};
 			name = Debug;
 		};
-		A1234567890ABCDEF1234578 /* Release */ = {
+		F04050C8EB574845B8EE29884DC74B4D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -300,7 +312,7 @@
 			};
 			name = Release;
 		};
-		A1234567890ABCDEF123457A /* Debug */ = {
+		F04050C8EB574845B8EE29884DC74B4E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -310,7 +322,6 @@
 				DEVELOPMENT_ASSET_PATHS = "\"NetworkSwitchGetter/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app needs access to the local network to discover network switches and devices.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -329,7 +340,7 @@
 			};
 			name = Debug;
 		};
-		A1234567890ABCDEF123457B /* Release */ = {
+		F04050C8EB574845B8EE29884DC74B4F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -339,7 +350,6 @@
 				DEVELOPMENT_ASSET_PATHS = "\"NetworkSwitchGetter/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app needs access to the local network to discover network switches and devices.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -361,25 +371,27 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A1234567890ABCDEF123455F /* Build configuration list for PBXProject "NetworkSwitchGetter" */ = {
+		F04050C8EB574845B8EE29884DC74B4A /* Build configuration list for PBXNativeTarget "NetworkSwitchGetter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A1234567890ABCDEF1234577 /* Debug */,
-				A1234567890ABCDEF1234578 /* Release */,
+				F04050C8EB574845B8EE29884DC74B4E /* Debug */,
+				F04050C8EB574845B8EE29884DC74B4F /* Release */,
 			);
+			defaultIsVisible = 0;
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1234567890ABCDEF1234579 /* Build configuration list for PBXNativeTarget "NetworkSwitchGetter" */ = {
+		F04050C8EB574845B8EE29884DC74B4B /* Build configuration list for PBXProject "NetworkSwitchGetter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A1234567890ABCDEF123457A /* Debug */,
-				A1234567890ABCDEF123457B /* Release */,
+				F04050C8EB574845B8EE29884DC74B4C /* Debug */,
+				F04050C8EB574845B8EE29884DC74B4D /* Release */,
 			);
+			defaultIsVisible = 0;
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = A1234567890ABCDEF123455C /* Project object */;
+	rootObject = F04050C8EB574845B8EE29884DC74B42 /* Project object */;
 }
