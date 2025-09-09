@@ -2,8 +2,11 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var networkManager: NetworkDiscoveryManager
+    @StateObject private var monitoringManager = NetworkMonitoringManager()
     @State private var showingAbout = false
     @State private var showingExportOptions = false
+    @State private var showingAISettings = false
+    @State private var showingWidgetSettings = false
     
     var body: some View {
         NavigationView {
@@ -19,14 +22,48 @@ struct SettingsView: View {
                     }
                 }
                 
+                // AI Configuration Section
+                Section("AI Configuration") {
+                    NavigationLink("AI Settings") {
+                        AISettingsView()
+                    }
+                    
+                    NavigationLink("VPN Configuration") {
+                        VPNConfigurationView()
+                    }
+                    
+                    NavigationLink("Trunk Port Management") {
+                        TrunkPortManagementView()
+                    }
+                }
+                
+                // Widget Configuration Section
+                Section("Widget Configuration") {
+                    NavigationLink("Widget Settings") {
+                        WidgetSettingsView()
+                    }
+                    
+                    NavigationLink("Customize Display") {
+                        WidgetCustomizationView()
+                    }
+                }
+                
                 // Data Management Section
                 Section("Data Management") {
-                    Button("Export Results") {
-                        showingExportOptions = true
+                    Button("Export Discovery Data") {
+                        exportDiscoveryData()
+                    }
+                    
+                    Button("Export Monitoring Data") {
+                        exportMonitoringData()
+                    }
+                    
+                    Button("Export All Data") {
+                        exportAllData()
                     }
                     
                     Button("Clear All Data") {
-                        networkManager.clearResults()
+                        clearAllData()
                     }
                     .foregroundColor(.red)
                 }
@@ -83,12 +120,52 @@ struct SettingsView: View {
         }
     }
     
-    private func exportAsCSV() {
-        // Implement CSV export
+    private func exportDiscoveryData() {
+        let data = networkManager.discoveredSwitches
+        let csvData = generateCSV(from: data)
+        shareData(csvData, filename: "network_discovery.csv")
     }
     
-    private func exportAsJSON() {
-        // Implement JSON export
+    private func exportMonitoringData() {
+        if let data = monitoringManager.exportAllData() {
+            shareData(data, filename: "network_monitoring.json")
+        }
+    }
+    
+    private func exportAllData() {
+        let discoveryData = networkManager.discoveredSwitches
+        let monitoringData = monitoringManager.exportAllData()
+        
+        let combinedData: [String: Any] = [
+            "discovery": discoveryData,
+            "monitoring": monitoringData ?? Data()
+        ]
+        
+        if let jsonData = try? JSONSerialization.data(withJSONObject: combinedData, options: .prettyPrinted) {
+            shareData(jsonData, filename: "network_data_export.json")
+        }
+    }
+    
+    private func clearAllData() {
+        networkManager.clearResults()
+        monitoringManager.clearAllData()
+    }
+    
+    private func generateCSV(from switches: [NetworkSwitch]) -> Data {
+        var csvString = "IP Address,Hostname,Vendor,Model,Status,Response Time,Capabilities\n"
+        
+        for switchDevice in switches {
+            let capabilities = switchDevice.capabilities.map { $0.rawValue }.joined(separator: ";")
+            csvString += "\(switchDevice.ipAddress),\(switchDevice.hostname ?? ""),\(switchDevice.vendor ?? ""),\(switchDevice.model ?? ""),\(switchDevice.status.rawValue),\(switchDevice.responseTime ?? 0),\(capabilities)\n"
+        }
+        
+        return csvString.data(using: .utf8) ?? Data()
+    }
+    
+    private func shareData(_ data: Data, filename: String) {
+        // This would typically use UIActivityViewController
+        // For now, we'll just log the action
+        print("Sharing data: \(filename) (\(data.count) bytes)")
     }
 }
 
@@ -490,6 +567,451 @@ struct TroubleshootingItem: View {
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(8)
+    }
+}
+
+// MARK: - AI Settings View
+struct AISettingsView: View {
+    @State private var enableAIAnalysis = true
+    @State private var analysisInterval: Double = 300 // 5 minutes
+    @State private var confidenceThreshold: Double = 0.7
+    @State private var enablePredictiveAnalytics = true
+    @State private var enableAutoRemediation = false
+    
+    var body: some View {
+        Form {
+            Section("AI Analysis") {
+                Toggle("Enable AI Analysis", isOn: $enableAIAnalysis)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Analysis Interval")
+                        Spacer()
+                        Text("\(Int(analysisInterval / 60)) minutes")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Slider(
+                        value: $analysisInterval,
+                        in: 60...3600,
+                        step: 60
+                    )
+                }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Confidence Threshold")
+                        Spacer()
+                        Text("\(String(format: "%.1f", confidenceThreshold))")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Slider(
+                        value: $confidenceThreshold,
+                        in: 0.1...1.0,
+                        step: 0.1
+                    )
+                }
+            }
+            
+            Section("Advanced Features") {
+                Toggle("Predictive Analytics", isOn: $enablePredictiveAnalytics)
+                Toggle("Auto Remediation", isOn: $enableAutoRemediation)
+            }
+            
+            Section("AI Recommendations") {
+                Text("AI will analyze your network performance and provide intelligent recommendations for optimization.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .navigationTitle("AI Settings")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - VPN Configuration View
+struct VPNConfigurationView: View {
+    @State private var vpnConfigurations: [VPNConfiguration] = []
+    @State private var showingAddVPN = false
+    
+    var body: some View {
+        List {
+            ForEach(vpnConfigurations) { config in
+                VPNConfigurationRow(config: config)
+            }
+            
+            Button("Add VPN Configuration") {
+                showingAddVPN = true
+            }
+        }
+        .navigationTitle("VPN Configuration")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingAddVPN) {
+            AddVPNConfigurationView { newConfig in
+                vpnConfigurations.append(newConfig)
+            }
+        }
+    }
+}
+
+// MARK: - VPN Configuration Row
+struct VPNConfigurationRow: View {
+    let config: VPNConfiguration
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(config.name)
+                    .font(.headline)
+                
+                Spacer()
+                
+                Circle()
+                    .fill(config.isActive ? .green : .gray)
+                    .frame(width: 12, height: 12)
+            }
+            
+            Text("\(config.type.rawValue) - \(config.serverAddress)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Text("Encryption: \(config.encryption.rawValue)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Add VPN Configuration View
+struct AddVPNConfigurationView: View {
+    @Environment(\.dismiss) private var dismiss
+    let onSave: (VPNConfiguration) -> Void
+    
+    @State private var name = ""
+    @State private var serverAddress = ""
+    @State private var username = ""
+    @State private var password = ""
+    @State private var selectedType = VPNConfiguration.VPNType.openvpn
+    @State private var selectedEncryption = VPNConfiguration.EncryptionType.aes256
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section("Basic Information") {
+                    TextField("Configuration Name", text: $name)
+                    TextField("Server Address", text: $serverAddress)
+                }
+                
+                Section("Authentication") {
+                    TextField("Username", text: $username)
+                    SecureField("Password", text: $password)
+                }
+                
+                Section("Protocol Settings") {
+                    Picker("VPN Type", selection: $selectedType) {
+                        ForEach(VPNConfiguration.VPNType.allCases, id: \.self) { type in
+                            Text(type.rawValue).tag(type)
+                        }
+                    }
+                    
+                    Picker("Encryption", selection: $selectedEncryption) {
+                        ForEach(VPNConfiguration.EncryptionType.allCases, id: \.self) { encryption in
+                            Text(encryption.rawValue).tag(encryption)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Add VPN")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        let newConfig = VPNConfiguration(
+                            name: name,
+                            type: selectedType,
+                            serverAddress: serverAddress,
+                            username: username,
+                            password: password,
+                            encryption: selectedEncryption,
+                            authentication: .usernamePassword,
+                            isActive: false,
+                            bandwidthLimit: nil,
+                            latencyThreshold: nil
+                        )
+                        onSave(newConfig)
+                        dismiss()
+                    }
+                    .disabled(name.isEmpty || serverAddress.isEmpty)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Trunk Port Management View
+struct TrunkPortManagementView: View {
+    @State private var trunkConfigurations: [TrunkPortConfiguration] = []
+    @State private var showingAddTrunk = false
+    
+    var body: some View {
+        List {
+            ForEach(trunkConfigurations) { config in
+                TrunkPortConfigurationRow(config: config)
+            }
+            
+            Button("Add Trunk Configuration") {
+                showingAddTrunk = true
+            }
+        }
+        .navigationTitle("Trunk Port Management")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingAddTrunk) {
+            AddTrunkPortConfigurationView { newConfig in
+                trunkConfigurations.append(newConfig)
+            }
+        }
+    }
+}
+
+// MARK: - Trunk Port Configuration Row
+struct TrunkPortConfigurationRow: View {
+    let config: TrunkPortConfiguration
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Port \(config.portNumber)")
+                    .font(.headline)
+                
+                Spacer()
+                
+                Circle()
+                    .fill(config.isActive ? .green : .gray)
+                    .frame(width: 12, height: 12)
+            }
+            
+            Text("Protocol: \(config.trunkingProtocol.rawValue)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Text("VLANs: \(config.vlans.map(String.init).joined(separator: ", "))")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Text("Utilization: \(String(format: "%.1f", config.utilization))%")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Add Trunk Port Configuration View
+struct AddTrunkPortConfigurationView: View {
+    @Environment(\.dismiss) private var dismiss
+    let onSave: (TrunkPortConfiguration) -> Void
+    
+    @State private var portNumber = 1
+    @State private var vlans: [Int] = []
+    @State private var nativeVlan = 1
+    @State private var selectedProtocol = TrunkPortConfiguration.TrunkingProtocol.dot1q
+    @State private var selectedLoadBalancing = TrunkPortConfiguration.LoadBalancingType.srcMac
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section("Port Configuration") {
+                    Stepper("Port Number: \(portNumber)", value: $portNumber, in: 1...48)
+                }
+                
+                Section("VLAN Configuration") {
+                    TextField("VLANs (comma-separated)", text: Binding(
+                        get: { vlans.map(String.init).joined(separator: ", ") },
+                        set: { vlans = $0.split(separator: ",").compactMap { Int($0.trimmingCharacters(in: .whitespaces)) } }
+                    ))
+                    
+                    Stepper("Native VLAN: \(nativeVlan)", value: $nativeVlan, in: 1...4094)
+                }
+                
+                Section("Protocol Settings") {
+                    Picker("Trunking Protocol", selection: $selectedProtocol) {
+                        ForEach(TrunkPortConfiguration.TrunkingProtocol.allCases, id: \.self) { protocol in
+                            Text(protocol.rawValue).tag(protocol)
+                        }
+                    }
+                    
+                    Picker("Load Balancing", selection: $selectedLoadBalancing) {
+                        ForEach(TrunkPortConfiguration.LoadBalancingType.allCases, id: \.self) { balancing in
+                            Text(balancing.rawValue).tag(balancing)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Add Trunk Port")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        let newConfig = TrunkPortConfiguration(
+                            portNumber: portNumber,
+                            vlans: vlans,
+                            allowedVlans: vlans,
+                            nativeVlan: nativeVlan,
+                            trunkingProtocol: selectedProtocol,
+                            loadBalancing: selectedLoadBalancing,
+                            isActive: false,
+                            bandwidth: 1000.0,
+                            utilization: 0.0
+                        )
+                        onSave(newConfig)
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Widget Settings View
+struct WidgetSettingsView: View {
+    @State private var refreshInterval: Double = 300 // 5 minutes
+    @State private var showAlerts = true
+    @State private var showBandwidth = true
+    @State private var showLatency = true
+    @State private var showDeviceCount = true
+    
+    var body: some View {
+        Form {
+            Section("Refresh Settings") {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Refresh Interval")
+                        Spacer()
+                        Text("\(Int(refreshInterval / 60)) minutes")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Slider(
+                        value: $refreshInterval,
+                        in: 60...1800,
+                        step: 60
+                    )
+                }
+            }
+            
+            Section("Display Options") {
+                Toggle("Show Alerts", isOn: $showAlerts)
+                Toggle("Show Bandwidth", isOn: $showBandwidth)
+                Toggle("Show Latency", isOn: $showLatency)
+                Toggle("Show Device Count", isOn: $showDeviceCount)
+            }
+            
+            Section("Widget Sizes") {
+                Text("Available in Small, Medium, and Large sizes")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .navigationTitle("Widget Settings")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - Widget Customization View
+struct WidgetCustomizationView: View {
+    @State private var selectedWidgetSize = "Medium"
+    @State private var showNetworkHealth = true
+    @State private var showTopDevices = true
+    @State private var showAlerts = true
+    @State private var maxDevicesToShow = 3
+    
+    var body: some View {
+        Form {
+            Section("Widget Size") {
+                Picker("Size", selection: $selectedWidgetSize) {
+                    Text("Small").tag("Small")
+                    Text("Medium").tag("Medium")
+                    Text("Large").tag("Large")
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+            
+            Section("Content Options") {
+                Toggle("Show Network Health", isOn: $showNetworkHealth)
+                Toggle("Show Top Devices", isOn: $showTopDevices)
+                Toggle("Show Alerts", isOn: $showAlerts)
+                
+                if showTopDevices {
+                    Stepper("Max Devices: \(maxDevicesToShow)", value: $maxDevicesToShow, in: 1...5)
+                }
+            }
+            
+            Section("Preview") {
+                WidgetPreviewView(
+                    size: selectedWidgetSize,
+                    showNetworkHealth: showNetworkHealth,
+                    showTopDevices: showTopDevices,
+                    showAlerts: showAlerts,
+                    maxDevices: maxDevicesToShow
+                )
+            }
+        }
+        .navigationTitle("Customize Widget")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - Widget Preview View
+struct WidgetPreviewView: View {
+    let size: String
+    let showNetworkHealth: Bool
+    let showTopDevices: Bool
+    let showAlerts: Bool
+    let maxDevices: Int
+    
+    var body: some View {
+        VStack {
+            Text("Widget Preview")
+                .font(.headline)
+            
+            // This would show a preview of the widget
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemGray6))
+                .frame(height: size == "Large" ? 200 : size == "Medium" ? 150 : 100)
+                .overlay(
+                    VStack {
+                        if showNetworkHealth {
+                            Text("Network Health: Good")
+                                .font(.caption)
+                        }
+                        
+                        if showTopDevices {
+                            Text("Top \(maxDevices) Devices")
+                                .font(.caption)
+                        }
+                        
+                        if showAlerts {
+                            Text("2 Alerts")
+                                .font(.caption)
+                        }
+                    }
+                )
+        }
+        .padding()
     }
 }
 

@@ -17,6 +17,7 @@ class NetworkMonitoringManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let networkMonitor = NWPathMonitor()
     private var previousInterfaceStats: [String: InterfaceStats] = [:]
+    private let logger = NetworkLogger.shared
     
     struct InterfaceStats {
         let bytesIn: UInt64
@@ -25,19 +26,26 @@ class NetworkMonitoringManager: ObservableObject {
     }
     
     init() {
+        logger.info("NetworkMonitoringManager initialized")
         setupNetworkMonitoring()
         startMonitoring()
     }
     
     deinit {
-        stopMonitoring()
+        Task { @MainActor in
+            stopMonitoring()
+        }
         networkMonitor.cancel()
     }
     
     // MARK: - Monitoring Control
     func startMonitoring() {
-        guard !isMonitoring else { return }
+        guard !isMonitoring else { 
+            logger.warning("Monitoring already in progress")
+            return 
+        }
         
+        logger.info("Starting network monitoring with interval: \(monitoringInterval)s")
         isMonitoring = true
         monitoringTimer = Timer.scheduledTimer(withTimeInterval: monitoringInterval, repeats: true) { [weak self] _ in
             Task {
@@ -47,6 +55,7 @@ class NetworkMonitoringManager: ObservableObject {
     }
     
     func stopMonitoring() {
+        logger.info("Stopping network monitoring")
         isMonitoring = false
         monitoringTimer?.invalidate()
         monitoringTimer = nil
@@ -62,10 +71,12 @@ class NetworkMonitoringManager: ObservableObject {
     
     // MARK: - Network Data Collection
     private func collectNetworkData() async {
+        logger.debug("Collecting network data")
         await collectBandwidthUsage()
         await collectLatencyMeasurements()
         await collectPerformanceMetrics()
         await updatePocketDisplayData()
+        logger.debug("Network data collection completed")
     }
     
     // MARK: - Bandwidth Monitoring
@@ -88,11 +99,12 @@ class NetworkMonitoringManager: ObservableObject {
                         deviceIP: getCurrentIPAddress() ?? "unknown"
                     )
                     
-                    bandwidthUsage.append(bandwidthUsage)
+                    self.bandwidthUsage.append(bandwidthUsage)
+                    self.logger.logPerformance("Bandwidth usage recorded", value: bandwidthUsage.totalBandwidthMbps, unit: "Mbps", details: ["interface": interfaceName])
                     
                     // Keep only last 100 measurements
-                    if bandwidthUsage.count > 100 {
-                        bandwidthUsage.removeFirst()
+                    if self.bandwidthUsage.count > 100 {
+                        self.bandwidthUsage.removeFirst()
                     }
                 }
             }
@@ -137,10 +149,12 @@ class NetworkMonitoringManager: ObservableObject {
     // MARK: - Latency Monitoring
     private func collectLatencyMeasurements() async {
         let targetIPs = getTargetIPs()
+        logger.debug("Measuring latency to \(targetIPs.count) targets")
         
         for targetIP in targetIPs {
             let measurement = await measureLatency(to: targetIP)
             latencyMeasurements.append(measurement)
+            logger.logPerformance("Latency measurement", value: measurement.latencyMs, unit: "ms", details: ["target": targetIP, "status": measurement.status.rawValue])
             
             // Keep only last 50 measurements per IP
             let measurementsForIP = latencyMeasurements.filter { $0.targetIP == targetIP }
@@ -256,6 +270,7 @@ class NetworkMonitoringManager: ObservableObject {
         )
         
         performanceMetrics.append(simulatedMetrics)
+        logger.logPerformance("Performance metrics collected", value: simulatedMetrics.cpuUsage, unit: "%", details: ["memory": simulatedMetrics.memoryUsage, "ports": simulatedMetrics.portUtilization.count])
         
         // Keep only last 20 measurements
         if performanceMetrics.count > 20 {
@@ -386,7 +401,7 @@ class NetworkMonitoringManager: ObservableObject {
                     severity: .error,
                     message: "High bandwidth usage: \(String(format: "%.1f", usage.totalBandwidthMbps)) Mbps",
                     timestamp: usage.timestamp,
-                    deviceIP: usage.deviceName
+                    deviceIP: usage.deviceIP
                 ))
             }
         }
@@ -433,18 +448,34 @@ class NetworkMonitoringManager: ObservableObject {
     
     // MARK: - Data Export
     func exportBandwidthData() -> Data? {
+        logger.info("Exporting bandwidth data (\(bandwidthUsage.count) records)")
         return try? JSONEncoder().encode(bandwidthUsage)
     }
     
     func exportLatencyData() -> Data? {
+        logger.info("Exporting latency data (\(latencyMeasurements.count) records)")
         return try? JSONEncoder().encode(latencyMeasurements)
     }
     
     func exportPerformanceData() -> Data? {
+        logger.info("Exporting performance data (\(performanceMetrics.count) records)")
         return try? JSONEncoder().encode(performanceMetrics)
     }
     
+    func exportAllData() -> Data? {
+        let exportData = [
+            "bandwidth": bandwidthUsage,
+            "latency": latencyMeasurements,
+            "performance": performanceMetrics,
+            "pocketDisplay": pocketDisplayData as Any
+        ] as [String : Any]
+        
+        logger.info("Exporting all monitoring data")
+        return try? JSONSerialization.data(withJSONObject: exportData, options: .prettyPrinted)
+    }
+    
     func clearAllData() {
+        logger.info("Clearing all monitoring data")
         bandwidthUsage.removeAll()
         latencyMeasurements.removeAll()
         performanceMetrics.removeAll()

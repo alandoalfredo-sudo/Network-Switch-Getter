@@ -14,15 +14,16 @@ let package = Package(
         ),
     ],
     targets: [
-        .target(
-            name: "NetworkSwitchGetter",
-            path: "NetworkSwitchGetter",
-            sources: [
-                "SwitchModel.swift",
-                "NetworkAnalyticsCore.swift",
-                "NetworkLogger.swift"
-            ]
-        ),
+               .target(
+                   name: "NetworkSwitchGetter",
+                   path: "NetworkSwitchGetter",
+                   sources: [
+                       "SwitchModel.swift",
+                       "NetworkAnalyticsCore.swift",
+                       "NetworkLogger.swift",
+                       "NetworkMonitoringManager.swift"
+                   ]
+               ),
         .testTarget(
             name: "NetworkSwitchGetterTests",
             dependencies: ["NetworkSwitchGetter"],
