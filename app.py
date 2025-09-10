@@ -14,6 +14,7 @@ import psutil
 import netifaces
 import time
 import threading
+import random
 from datetime import datetime
 import logging
 
@@ -101,6 +102,21 @@ def get_system_info():
         'boot_time': datetime.fromtimestamp(psutil.boot_time()).isoformat()
     }
 
+def generate_mac_address():
+    """Generate a random MAC address"""
+    return ':'.join(['%02x' % random.randint(0, 255) for _ in range(6)])
+
+def generate_ip_address():
+    """Generate a random IP address in common ranges"""
+    ranges = [
+        '192.168.1.',
+        '192.168.0.',
+        '10.0.0.',
+        '172.16.0.'
+    ]
+    base = random.choice(ranges)
+    return base + str(random.randint(1, 254))
+
 @app.route('/')
 def index():
     """Main dashboard page"""
@@ -110,6 +126,11 @@ def index():
 def features():
     """Features and capabilities page"""
     return render_template('features.html')
+
+@app.route('/port-monitor')
+def port_monitor():
+    """Port monitoring dashboard"""
+    return render_template('port_monitor.html')
 
 @app.route('/api/switches')
 def get_switches():
@@ -204,6 +225,104 @@ def update_port(switch_ip, port_number):
     
     port.update(data)
     return jsonify(port)
+
+@app.route('/api/port-monitor')
+def get_port_monitor_data():
+    """Get real-time port monitoring data"""
+    # Simulate port monitoring data
+    connections = []
+    switches_data = {}
+    
+    for switch in discovered_switches:
+        switch_ports = []
+        active_ports = 0
+        
+        for port in switch.ports:
+            # Simulate port connection data
+            mac_address = generate_mac_address()
+            ip_address = generate_ip_address() if random.random() > 0.3 else None
+            device_name = f"Device-{random.randint(1, 100)}" if ip_address else None
+            
+            connection = {
+                'portNumber': port['port_number'],
+                'macAddress': mac_address,
+                'ipAddress': ip_address,
+                'deviceName': device_name,
+                'switchIP': switch.ip,
+                'switchName': switch.name,
+                'vlan': random.randint(1, 100) if random.random() > 0.5 else None,
+                'speed': random.choice(['1 Gbps', '100 Mbps', '10 Gbps']),
+                'duplex': 'Full',
+                'status': port['status'],
+                'lastSeen': datetime.now().isoformat(),
+                'uptime': random.randint(100, 86400) if port['status'] == 'Up' else None
+            }
+            
+            connections.append(connection)
+            switch_ports.append(connection)
+            
+            if port['status'] == 'Up':
+                active_ports += 1
+        
+        switches_data[switch.ip] = {
+            'switchIP': switch.ip,
+            'switchName': switch.name,
+            'totalPorts': len(switch.ports),
+            'activePorts': active_ports,
+            'ports': switch_ports,
+            'lastUpdated': datetime.now().isoformat()
+        }
+    
+    # Simulate monitoring statistics
+    stats = {
+        'totalConnections': len([c for c in connections if c['status'] == 'Up']),
+        'totalSwitches': len(discovered_switches),
+        'totalPorts': sum(len(s.ports) for s in discovered_switches),
+        'successRate': random.uniform(95, 99.5),
+        'totalScans': random.randint(100, 1000),
+        'successfulScans': random.randint(95, 99),
+        'failedScans': random.randint(1, 5),
+        'lastScanDuration': random.uniform(0.5, 2.0),
+        'averageScanDuration': random.uniform(1.0, 3.0),
+        'uptime': random.uniform(3600, 86400)
+    }
+    
+    return jsonify({
+        'connections': connections,
+        'switches': switches_data,
+        'stats': stats,
+        'timestamp': datetime.now().isoformat()
+    })
+
+@app.route('/api/port-monitor/export')
+def export_port_monitor_data():
+    """Export port monitoring data"""
+    data = get_port_monitor_data()
+    return jsonify(data.get_json())
+
+@app.route('/api/port-monitor/filter')
+def filter_port_monitor_data():
+    """Filter port monitoring data"""
+    mac_filter = request.args.get('mac', '').lower()
+    ip_filter = request.args.get('ip', '').lower()
+    switch_filter = request.args.get('switch', '').lower()
+    port_filter = request.args.get('port', '')
+    
+    data = get_port_monitor_data().get_json()
+    connections = data['connections']
+    
+    filtered_connections = []
+    for connection in connections:
+        mac_match = not mac_filter or mac_filter in connection['macAddress'].lower()
+        ip_match = not ip_filter or (connection['ipAddress'] and ip_filter in connection['ipAddress'].lower())
+        switch_match = not switch_filter or switch_filter in connection['switchName'].lower()
+        port_match = not port_filter or port_filter in str(connection['portNumber'])
+        
+        if mac_match and ip_match and switch_match and port_match:
+            filtered_connections.append(connection)
+    
+    data['connections'] = filtered_connections
+    return jsonify(data)
 
 @app.route('/api/health')
 def health_check():

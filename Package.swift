@@ -21,7 +21,9 @@ let package = Package(
                        "SwitchModel.swift",
                        "NetworkAnalyticsCore.swift",
                        "NetworkLogger.swift",
-                       "NetworkMonitoringManager.swift"
+                       "NetworkMonitoringManager.swift",
+                       "PortMonitor.swift",
+                       "PortMonitoringLogger.swift"
                    ]
                ),
         .testTarget(

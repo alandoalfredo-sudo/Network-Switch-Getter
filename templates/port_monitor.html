@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port Monitor - Network Switch Getter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .port-monitor-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .connection-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #28a745;
+        }
+        .connection-card.port-down {
+            border-left-color: #dc3545;
+        }
+        .connection-card.port-testing {
+            border-left-color: #ffc107;
+        }
+        .connection-card.port-unknown {
+            border-left-color: #6c757d;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-up { background-color: #28a745; }
+        .status-down { background-color: #dc3545; }
+        .status-testing { background-color: #ffc107; }
+        .status-unknown { background-color: #6c757d; }
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stats-card {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        .live-indicator {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .port-table {
+            font-size: 0.9rem;
+        }
+        .port-table th {
+            background-color: #f8f9fa;
+            border-top: none;
+            font-weight: 600;
+        }
+        .refresh-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-network-wired me-2"></i>Network Switch Getter
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Dashboard</a>
+                <a class="nav-link" href="/features">Features</a>
+                <a class="nav-link active" href="/port-monitor">Port Monitor</a>
+                <a class="nav-link" href="/api/health">API Status</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="port-monitor-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-eye me-3"></i>Real-Time Port Monitor</h1>
+                    <p class="lead mb-0">Live monitoring of all switch ports and connected devices</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <span class="live-indicator me-2">
+                            <i class="fas fa-circle text-success"></i>
+                        </span>
+                        <span>Live Monitoring</span>
+                        <span class="ms-3" id="last-update">Never</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="stats-card text-center">
+                        <h3 id="total-connections">0</h3>
+                        <p class="mb-0">Active Connections</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stats-card text-center">
+                        <h3 id="total-switches">0</h3>
+                        <p class="mb-0">Monitored Switches</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stats-card text-center">
+                        <h3 id="total-ports">0</h3>
+                        <p class="mb-0">Total Ports</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stats-card text-center">
+                        <h3 id="success-rate">0%</h3>
+                        <p class="mb-0">Success Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="py-3">
+        <div class="container">
+            <div class="filter-section">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <label class="form-label">Filter by MAC Address</label>
+                        <input type="text" class="form-control" id="mac-filter" placeholder="e.g., 00:11:22:33:44:55">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Filter by IP Address</label>
+                        <input type="text" class="form-control" id="ip-filter" placeholder="e.g., 192.168.1.100">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Filter by Switch</label>
+                        <input type="text" class="form-control" id="switch-filter" placeholder="e.g., Switch-1">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Filter by Port</label>
+                        <input type="number" class="form-control" id="port-filter" placeholder="e.g., 1">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button class="btn btn-primary me-2" onclick="applyFilters()">
+                            <i class="fas fa-filter me-1"></i>Apply Filters
+                        </button>
+                        <button class="btn btn-outline-secondary me-2" onclick="clearFilters()">
+                            <i class="fas fa-times me-1"></i>Clear Filters
+                        </button>
+                        <button class="btn btn-success" onclick="exportData()">
+                            <i class="fas fa-download me-1"></i>Export Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Port Connections Table -->
+    <section class="py-4">
+        <div class="container">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Port Connections
+                        <span class="badge bg-primary ms-2" id="connection-count">0</span>
+                    </h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </button>
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" id="auto-refresh" checked>
+                            <label class="form-check-label" for="auto-refresh">
+                                Auto Refresh
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover port-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Port</th>
+                                    <th>MAC Address</th>
+                                    <th>IP Address</th>
+                                    <th>Device Name</th>
+                                    <th>Switch</th>
+                                    <th>VLAN</th>
+                                    <th>Speed</th>
+                                    <th>Status</th>
+                                    <th>Last Seen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="connections-table">
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading port data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Switch Overview -->
+    <section class="py-4">
+        <div class="container">
+            <div class="row" id="switches-overview">
+                <!-- Switch cards will be populated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Refresh Button -->
+    <button class="btn btn-primary btn-lg refresh-btn" onclick="refreshData()" title="Refresh Data">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let portData = [];
+        let filteredData = [];
+        let autoRefreshInterval;
+        let isAutoRefresh = true;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPortData();
+            setupAutoRefresh();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Auto refresh toggle
+            document.getElementById('auto-refresh').addEventListener('change', function() {
+                isAutoRefresh = this.checked;
+                if (isAutoRefresh) {
+                    setupAutoRefresh();
+                } else {
+                    clearInterval(autoRefreshInterval);
+                }
+            });
+
+            // Filter inputs
+            ['mac-filter', 'ip-filter', 'switch-filter', 'port-filter'].forEach(id => {
+                document.getElementById(id).addEventListener('input', debounce(applyFilters, 500));
+            });
+        }
+
+        function setupAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            if (isAutoRefresh) {
+                autoRefreshInterval = setInterval(loadPortData, 5000); // 5 seconds
+            }
+        }
+
+        async function loadPortData() {
+            try {
+                const response = await fetch('/api/port-monitor');
+                const data = await response.json();
+                
+                portData = data.connections || [];
+                filteredData = [...portData];
+                
+                updateStatistics(data.stats || {});
+                updateConnectionsTable();
+                updateSwitchesOverview(data.switches || {});
+                updateLastUpdateTime();
+                
+            } catch (error) {
+                console.error('Error loading port data:', error);
+                showError('Failed to load port data');
+            }
+        }
+
+        function updateStatistics(stats) {
+            document.getElementById('total-connections').textContent = stats.totalConnections || 0;
+            document.getElementById('total-switches').textContent = stats.totalSwitches || 0;
+            document.getElementById('total-ports').textContent = stats.totalPorts || 0;
+            document.getElementById('success-rate').textContent = (stats.successRate || 0).toFixed(1) + '%';
+        }
+
+        function updateConnectionsTable() {
+            const tbody = document.getElementById('connections-table');
+            const countElement = document.getElementById('connection-count');
+            
+            countElement.textContent = filteredData.length;
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">No connections found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredData.map(connection => `
+                <tr class="connection-card ${getStatusClass(connection.status)}">
+                    <td><strong>${connection.portNumber}</strong></td>
+                    <td><code>${connection.macAddress}</code></td>
+                    <td>${connection.ipAddress || '<span class="text-muted">N/A</span>'}</td>
+                    <td>${connection.deviceName || '<span class="text-muted">Unknown</span>'}</td>
+                    <td>
+                        <strong>${connection.switchName}</strong><br>
+                        <small class="text-muted">${connection.switchIP}</small>
+                    </td>
+                    <td>${connection.vlan || '<span class="text-muted">N/A</span>'}</td>
+                    <td>${connection.speed || '<span class="text-muted">Unknown</span>'}</td>
+                    <td>
+                        <span class="status-indicator status-${connection.status}"></span>
+                        ${connection.status.charAt(0).toUpperCase() + connection.status.slice(1)}
+                    </td>
+                    <td>
+                        <small>${formatDate(connection.lastSeen)}</small>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateSwitchesOverview(switches) {
+            const container = document.getElementById('switches-overview');
+            
+            if (Object.keys(switches).length === 0) {
+                container.innerHTML = '<div class="col-12 text-center text-muted">No switch data available</div>';
+                return;
+            }
+            
+            container.innerHTML = Object.values(switches).map(switchInfo => `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">${switchInfo.switchName}</h6>
+                            <span class="badge bg-${switchInfo.activePorts > 0 ? 'success' : 'secondary'}">
+                                ${switchInfo.activePorts}/${switchInfo.totalPorts}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong>IP:</strong> ${switchInfo.switchIP}</p>
+                            <p class="mb-1"><strong>Active Ports:</strong> ${switchInfo.activePorts}</p>
+                            <p class="mb-0"><strong>Total Ports:</strong> ${switchInfo.totalPorts}</p>
+                            <small class="text-muted">Last updated: ${formatDate(switchInfo.lastUpdated)}</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function applyFilters() {
+            const macFilter = document.getElementById('mac-filter').value.toLowerCase();
+            const ipFilter = document.getElementById('ip-filter').value.toLowerCase();
+            const switchFilter = document.getElementById('switch-filter').value.toLowerCase();
+            const portFilter = document.getElementById('port-filter').value;
+            
+            filteredData = portData.filter(connection => {
+                const macMatch = !macFilter || connection.macAddress.toLowerCase().includes(macFilter);
+                const ipMatch = !ipFilter || (connection.ipAddress && connection.ipAddress.includes(ipFilter));
+                const switchMatch = !switchFilter || connection.switchName.toLowerCase().includes(switchFilter);
+                const portMatch = !portFilter || connection.portNumber.toString().includes(portFilter);
+                
+                return macMatch && ipMatch && switchMatch && portMatch;
+            });
+            
+            updateConnectionsTable();
+        }
+
+        function clearFilters() {
+            document.getElementById('mac-filter').value = '';
+            document.getElementById('ip-filter').value = '';
+            document.getElementById('switch-filter').value = '';
+            document.getElementById('port-filter').value = '';
+            
+            filteredData = [...portData];
+            updateConnectionsTable();
+        }
+
+        function refreshData() {
+            loadPortData();
+        }
+
+        function exportData() {
+            const dataToExport = {
+                connections: filteredData,
+                exportTime: new Date().toISOString(),
+                totalConnections: filteredData.length
+            };
+            
+            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `port-monitor-export-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'up': return 'port-up';
+                case 'down': return 'port-down';
+                case 'testing': return 'port-testing';
+                default: return 'port-unknown';
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString();
+        }
+
+        function updateLastUpdateTime() {
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        }
+
+        function showError(message) {
+            // Simple error display - could be enhanced with toast notifications
+            console.error(message);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+</body>
+</html>
