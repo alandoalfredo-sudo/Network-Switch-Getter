@@ -106,6 +106,11 @@ def index():
     """Main dashboard page"""
     return render_template('index.html')
 
+@app.route('/features')
+def features():
+    """Features and capabilities page"""
+    return render_template('features.html')
+
 @app.route('/api/switches')
 def get_switches():
     """Get all discovered switches"""
