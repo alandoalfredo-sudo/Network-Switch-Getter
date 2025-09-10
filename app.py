@@ -132,6 +132,11 @@ def port_monitor():
     """Port monitoring dashboard"""
     return render_template('port_monitor.html')
 
+@app.route('/switch-dashboard')
+def switch_dashboard():
+    """Switch dashboard with port configuration"""
+    return render_template('switch_dashboard.html')
+
 @app.route('/api/switches')
 def get_switches():
     """Get all discovered switches"""
@@ -323,6 +328,146 @@ def filter_port_monitor_data():
     
     data['connections'] = filtered_connections
     return jsonify(data)
+
+@app.route('/api/port-config', methods=['POST'])
+def configure_port():
+    """Configure a switch port"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['switchId', 'portNumber']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'success': False, 'error': f'Missing required field: {field}'}), 400
+        
+        switch_id = data['switchId']
+        port_number = data['portNumber']
+        
+        # Find the switch
+        switch = next((s for s in discovered_switches if s.ip == switch_id), None)
+        if not switch:
+            return jsonify({'success': False, 'error': 'Switch not found'}), 404
+        
+        # Simulate port configuration
+        logger.info(f"Configuring port {port_number} on switch {switch_id}")
+        
+        # In a real implementation, this would:
+        # 1. Connect to the switch via SSH/SNMP
+        # 2. Apply the configuration
+        # 3. Verify the changes
+        
+        # For demo purposes, we'll simulate success
+        config_result = {
+            'success': True,
+            'message': f'Port {port_number} configured successfully',
+            'switch': switch_id,
+            'port': port_number,
+            'timestamp': datetime.now().isoformat(),
+            'applied_config': {
+                'port_name': data.get('portName', ''),
+                'admin_status': data.get('adminStatus', 'up'),
+                'port_mode': data.get('portMode', 'access'),
+                'speed': data.get('speed', 'auto'),
+                'duplex': data.get('duplex', 'auto'),
+                'access_vlan': data.get('accessVlan', ''),
+                'native_vlan': data.get('nativeVlan', ''),
+                'allowed_vlans': data.get('allowedVlans', ''),
+                'poe_enabled': data.get('poeEnabled', False),
+                'stp_enabled': data.get('stpEnabled', True),
+                'port_security_enabled': data.get('portSecurityEnabled', False),
+                'storm_control_enabled': data.get('stormControlEnabled', False),
+                'max_mac_addresses': data.get('maxMacAddresses', ''),
+                'violation_action': data.get('violationAction', 'shutdown'),
+                'lag_group': data.get('lagGroup', 'none'),
+                'lacp_mode': data.get('lacpMode', 'off')
+            }
+        }
+        
+        return jsonify(config_result)
+        
+    except Exception as e:
+        logger.error(f"Error configuring port: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/port-status/<switch_ip>/<int:port_number>')
+def get_port_status(switch_ip, port_number):
+    """Get detailed status of a specific port"""
+    try:
+        # Find the switch
+        switch = next((s for s in discovered_switches if s.ip == switch_ip), None)
+        if not switch:
+            return jsonify({'error': 'Switch not found'}), 404
+        
+        # Simulate port status data
+        port_data = {
+            'switch_ip': switch_ip,
+            'port_number': port_number,
+            'status': 'up' if random.random() > 0.3 else 'down',
+            'mac_address': generate_mac_address(),
+            'ip_address': generate_ip_address() if random.random() > 0.4 else None,
+            'vlan': random.randint(1, 100) if random.random() > 0.5 else None,
+            'speed': random.choice(['1 Gbps', '100 Mbps', '10 Gbps']),
+            'duplex': 'Full',
+            'poe_status': 'Enabled' if random.random() > 0.7 else 'Disabled',
+            'last_seen': datetime.now().isoformat(),
+            'uptime': random.randint(100, 86400),
+            'errors': {
+                'crc_errors': random.randint(0, 10),
+                'collisions': random.randint(0, 5),
+                'late_collisions': random.randint(0, 2)
+            },
+            'traffic': {
+                'bytes_in': random.randint(1000000, 100000000),
+                'bytes_out': random.randint(1000000, 100000000),
+                'packets_in': random.randint(10000, 1000000),
+                'packets_out': random.randint(10000, 1000000)
+            }
+        }
+        
+        return jsonify(port_data)
+        
+    except Exception as e:
+        logger.error(f"Error getting port status: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/switch-ports/<switch_ip>')
+def get_all_switch_ports(switch_ip):
+    """Get all ports for a specific switch"""
+    try:
+        # Find the switch
+        switch = next((s for s in discovered_switches if s.ip == switch_ip), None)
+        if not switch:
+            return jsonify({'error': 'Switch not found'}), 404
+        
+        # Generate port data for all 24 ports
+        ports = []
+        for port_num in range(1, 25):
+            port_data = {
+                'port_number': port_num,
+                'status': 'up' if random.random() > 0.3 else 'down',
+                'mac_address': generate_mac_address(),
+                'ip_address': generate_ip_address() if random.random() > 0.4 else None,
+                'vlan': random.randint(1, 100) if random.random() > 0.5 else None,
+                'speed': random.choice(['1 Gbps', '100 Mbps', '10 Gbps']),
+                'duplex': 'Full',
+                'poe_status': 'Enabled' if random.random() > 0.7 else 'Disabled',
+                'last_seen': datetime.now().isoformat()
+            }
+            ports.append(port_data)
+        
+        return jsonify({
+            'switch_ip': switch_ip,
+            'switch_name': switch.name if hasattr(switch, 'name') else f'Switch {switch_ip}',
+            'total_ports': 24,
+            'active_ports': len([p for p in ports if p['status'] == 'up']),
+            'ports': ports,
+            'last_updated': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting switch ports: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/health')
 def health_check():
